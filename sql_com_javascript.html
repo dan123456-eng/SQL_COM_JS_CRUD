@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+
+<div class ="center">
+<h1>VAMOS USAR BANCO DE DADOS COM A LINGUAGEM SQL</h1>
+</div>
+
+<head>
+
+<style>
+h1 {
+  color: blue;
+
+}
+output {
+  color: Red;
+
+}
+ output {
+  width: 500px;
+  height: 500px;
+  background-color: lightblue;
+}
+.caixa {
+  background-color: tomato;
+  color: white;
+  border: 2px solid black;
+  margin: 20px;
+  padding: 20px;
+}
+
+.center {
+  text-align: center;
+  border: 3px solid green;
+}
+</style>
+
+</head>
+
+<body>
+<script>
+/*Writing into an HTML element, using innerHTML.
+Writing into the HTML output using document.write().
+Writing into an alert box, using window.alert().
+Writing into the browser console, using console.log().*/
+//<p id="teste"></p> saida em html
+var db;
+var shortName = 'teste';
+var version = '1.1';
+var displayName = 'SQL_COM_JAVASCRITP';
+var maxSize = 60000;
+
+// CRIA CONEXÃO COM O BANCO
+db = openDatabase(shortName, version, displayName, maxSize);
+
+//CRIA BANCO tabela
+//tx é o cursor
+// transaction inicia a transação
+db.transaction(function(tx){tx.executeSql('CREATE TABLE teste(id integer not null, nome text)')})
+
+function insere(){
+//--insere no banco de dados
+        var id_ = document.getElementById("id").value;
+        var nome_ = document.getElementById("nome").value;
+		document.getElementById("inserido").value = "DADOS INSERIDOS...";
+        //INSERE OS DADOS
+        db.transaction(function(transaction) {
+        transaction.executeSql('INSERT INTO teste(id, nome) VALUES (?,?)',[id_, nome_]);
+});
+}
+
+function mostra_dados(){
+// BUSCA OS DADOS tx é o cursor
+        db.transaction(function(tx){tx.executeSql('SELECT * from teste', [], function(tx, resultado){
+
+//MOSTRA OS DADOS --temos as linhas no resultado
+        var rows = resultado.rows;
+        for (var l = 0; l < rows.length; l++){
+        //document.write( '<td>'+ rows[l].nome +'</td>'+'</br>');
+        //document.write(rows[l].id);
+		
+        document.getElementById("resultado1").value = rows[l].nome;// VALUE PEGA O VALOR DO CAMPO
+        document.getElementById("resultado2").value = rows[l].id;//value, ela refere-se ao valor do campo
+		
+} 
+})});
+}
+
+function excluir(){
+        var id_ = document.getElementById("id").value;
+        db.transaction(function(transaction){transaction.executeSql('DELETE FROM teste WHERE id = ?', [id_,])
+		
+		});
+        
+}
+
+function atualiza(){
+        var id_ = document.getElementById("id").value;
+        db.transaction(function(transaction){transaction.executeSql('UPDATE teste SET id = ?', [id_,])
+		});
+}
+</script>
+
+<div class="caixa">
+<!--INICIO - SAIDA E ENTRADA DE DADOS:-->
+ID: <input id = "id"></input>
+</p>
+NOME: <input id = "nome"></input>
+</p>
+QUANTIDADE: <input></input>
+</p>
+</div>
+
+<div class="caixa">
+<button onclick = "insere()">inserir no banco de dados</button>
+<button onclick = "atualiza()" >atualizar</button>
+<button onclick = "excluir()">excluir dados</button>
+<button onclick = "mostra_dados()" >mostrar dados</button> <!--onclick = "mostra_dados()" MOSTRA ATRAVES DE UM CLIQUE -->
+</p>
+SAIDA DE DADOS NOME: <output id="resultado1"></output>
+</br>
+SAIDA DE DADOS ID: <output id="resultado2"></output>
+</br>
+MSG: <output id="inserido"></output>
+</div>
+
+</body>
+</html>
